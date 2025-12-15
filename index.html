@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>xxixixix</title>
+    <style>
+      :root {
+        --bg-primary: hsl(0, 100%, 91%);
+        --bg-secondary: #ffc3c3;
+        --bg-tertiary: #ff8a8a;
+        --band-height: 120px;
+        --cloud-width: 200px;
+        --cloud-height: 200px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        /* GRADASI BACKGROUND */
+        background: linear-gradient(
+          hsl(171, 100%, 95%) 0%,
+          hsl(40, 100%, 85%) 50%,
+          hsl(336, 100%, 75%) 100%
+        );
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        font-family: system-ui, sans-serif;
+        padding: var(--band-height) 0; /* Otomatis menyesuaikan */
+      }
+
+      /* Awan Responsif */
+      .awan-border {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: var(--cloud-height);
+        pointer-events: none;
+        z-index: 10;
+        overflow: hidden;
+      }
+
+      .awan-border.top {
+        top: -20px;
+      }
+
+      .awan-border.bottom {
+        bottom: 0;
+        transform: rotate(180deg);
+      }
+
+      /* RUMPUT YANG LEBIH BESAR */
+      .rumput-border {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: var(--band-height); /* Gunakan variable yang sudah diperbesar */
+        background-image: url("src/rumput.png");
+        background-repeat: repeat-x;
+        background-size: auto 200%; /* Isi tinggi penuh */
+        background-position: bottom;
+        image-rendering: pixelated;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      .rumput-border.bottom {
+        bottom: 0;
+      }
+
+      /* Container awan */
+      .cloud-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Track awan untuk animasi */
+      .cloud-track {
+        position: absolute;
+        display: flex;
+        height: 100%;
+        animation: moveCloudsCenter 60s linear infinite;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .cloud {
+        width: var(--cloud-width);
+        height: 100%;
+        background-image: url("src/awan.png");
+        background-repeat: no-repeat;
+        background-size: contain;
+        image-rendering: pixelated;
+        flex-shrink: 0;
+      }
+
+      /* Animasi dari tengah ke kiri, lalu loop */
+      @keyframes moveCloudsCenter {
+        0% {
+          transform: translateX(-50%);
+        }
+        100% {
+          transform: translateX(calc(-50% - var(--cloud-width)));
+        }
+      }
+
+      /* Konten */
+      .content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        z-index: 20;
+      }
+
+      .content img {
+        width: 200px;
+        height: auto;
+        display: block;
+        image-rendering: pixelated;
+      }
+
+      .content img.second {
+        margin-top: -8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="awan-border top">
+      <div class="cloud-container">
+        <div class="cloud-track" id="cloudTrackTop"></div>
+      </div>
+    </div>
+
+    <div class="content" role="main">
+      <img src="src/cat.gif" alt="cat" />
+      <img class="second" src="src/load.gif" alt="loading" />
+    </div>
+
+    <!-- Rumput yang lebih besar -->
+    <div class="rumput-border bottom" aria-hidden="true"></div>
+
+    <script>
+      // Fungsi untuk membuat awan dari tengah
+      function setupClouds() {
+        const tracks = document.querySelectorAll(".cloud-track");
+        const cloudWidth = parseInt(
+          getComputedStyle(document.documentElement).getPropertyValue(
+            "--cloud-width"
+          )
+        );
+
+        tracks.forEach((track) => {
+          const screenWidth = window.innerWidth;
+          const cloudsHalf = Math.ceil(screenWidth / cloudWidth / 2) + 1;
+
+          track.innerHTML = "";
+
+          // Awan kiri
+          for (let i = 0; i < cloudsHalf; i++) {
+            const cloud = document.createElement("div");
+            cloud.className = "cloud";
+            track.appendChild(cloud);
+          }
+
+          // Awan tengah
+          const centerCloud = document.createElement("div");
+          centerCloud.className = "cloud";
+          track.appendChild(centerCloud);
+
+          // Awan kanan
+          for (let i = 0; i < cloudsHalf; i++) {
+            const cloud = document.createElement("div");
+            cloud.className = "cloud";
+            track.appendChild(cloud);
+          }
+        });
+      }
+
+      // Setup awal
+      setupClouds();
+      window.addEventListener("resize", setupClouds);
+
+      setTimeout(function () {
+        window.location.href = "home.html";
+      }, 6000);
+    </script>
+  </body>
+</html>

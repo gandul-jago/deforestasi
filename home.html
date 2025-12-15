@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pixel Home</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        image-rendering: pixelated;
+      }
+
+      body {
+        height: 100vh;
+        background: #4aa1e4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, sans-serif;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* ================= CLOUD ================= */
+      .clouds-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        z-index: 3;
+        pointer-events: none;
+      }
+
+      .cloud-track {
+        position: absolute;
+        display: flex;
+        height: 100%;
+        animation: cloudsScroll 35s linear infinite;
+      }
+
+      .cloud {
+        width: 300px;
+        height: 100%;
+        background-image: url("src/cloud.png");
+        background-repeat: no-repeat;
+        background-size: contain;
+        flex-shrink: 0;
+        margin-right: -40px;
+      }
+
+      @keyframes cloudsScroll {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-160px);
+        }
+      }
+
+      /* ================= HOME ================= */
+      .home {
+        text-align: center;
+        z-index: 10;
+        position: relative;
+        margin-bottom: 100px;
+      }
+
+      .hero-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .hero-image {
+        width: 200px;
+        margin-bottom: -20px;
+      }
+
+      /* CUSTOM BUTTON UTAMA (START) */
+      .custom-btn {
+        width: 100px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-top: -20px;
+        transition: transform 0.1s ease;
+        z-index: 20;
+        transform-origin: center;
+      }
+
+      .custom-btn img {
+        width: 100%;
+        display: block;
+      }
+
+      .custom-btn:active {
+        transform: scale(0.9) rotate(-5deg);
+      }
+
+      /* ================= GRASS ================= */
+      .grass-container {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        min-height: 200px;
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .grass {
+        width: 100%;
+        height: auto;
+        display: block;
+        min-height: 400px;
+        object-fit: cover;
+        object-position: bottom;
+      }
+
+      /* ================= VIDEO ================= */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 240, 245, 0.95);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+
+      .video-box {
+        border: 6px solid #ff7fa8;
+        background: #fff;
+        padding: 8px;
+        width: 90%;
+        max-width: 800px;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        position: relative;
+      }
+
+      /* VIDEO TANPA CONTROLS DEFAULT */
+      #mainVideo {
+        width: 100%;
+        display: block;
+        background: #000;
+        border-radius: 5px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+      }
+
+      /* Hide default controls */
+      #mainVideo::-webkit-media-controls {
+        display: none !important;
+      }
+
+      /* CUSTOM CONTROLS - HANYA 3 TOMBOL */
+      .video-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.95);
+        margin-top: 5px;
+        border-radius: 5px;
+        border: 2px solid #ffd6e8;
+      }
+
+      /* STYLE CUSTOM BUTTON DI VIDEO */
+      .video-btn {
+        background: #ff7fa8;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        min-width: 100px;
+        text-align: center;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .video-btn:hover {
+        background: #ff4f8b;
+        transform: scale(1.05);
+      }
+
+      .video-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* Tombol close */
+      .close-btn {
+        position: absolute;
+        top: -15px;
+        right: -15px;
+        background: #ff7fa8;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 101;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- CLOUD -->
+    <div class="clouds-bg">
+      <div class="cloud-track" id="cloudTrack"></div>
+    </div>
+
+    <!-- GRASS -->
+    <div class="grass-container">
+      <img src="src/BAWAH.png" class="grass" />
+    </div>
+
+    <!-- HOME -->
+    <div class="home">
+      <div class="hero-container">
+        <img src="src/game.png" class="hero-image" />
+        <button class="custom-btn" onclick="playVideoWithAnimation()">
+          <img src="src/start.png" />
+        </button>
+      </div>
+    </div>
+
+    <!-- VIDEO OVERLAY -->
+    <div class="overlay" id="overlay">
+      <div class="video-box">
+        <button class="close-btn" onclick="closeVideo()">×</button>
+
+        <!-- VIDEO TANPA CONTROLS DEFAULT -->
+        <video id="mainVideo" playsinline webkit-playsinline preload="metadata">
+          <source src="src/vidio.mp4" type="video/mp4" />
+        </video>
+
+        <!-- CUSTOM CONTROLS - HANYA 3 TOMBOL -->
+        <div class="video-controls">
+          <button class="video-btn" onclick="togglePlay()" id="playBtn">
+            <span id="playIcon">▶</span>
+            <span id="playText">Play</span>
+          </button>
+
+          <button class="video-btn" onclick="toggleMute()" id="muteBtn">
+            <span id="volumeIcon">🔊</span>
+            <span>Suara</span>
+          </button>
+
+          <button class="video-btn" onclick="restartVideo()">
+            <span>↻</span>
+            <span>Ulang</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function setupClouds() {
+        const track = document.getElementById("cloudTrack");
+        const cloudWidth = 160;
+        const count = Math.ceil(window.innerWidth / cloudWidth) + 4;
+
+        track.innerHTML = "";
+
+        for (let i = 0; i < count; i++) {
+          const cloud = document.createElement("div");
+          cloud.className = "cloud";
+          track.appendChild(cloud);
+        }
+      }
+
+      setupClouds();
+      window.addEventListener("resize", setupClouds);
+
+      function playVideoWithAnimation() {
+        const btn = document.querySelector(".custom-btn");
+
+        // ANIMASI BUTTON DITTEKAN
+        btn.style.transform = "scale(0.9) rotate(-5deg)";
+
+        setTimeout(() => {
+          document.getElementById("overlay").style.display = "flex";
+          btn.style.transform = "scale(1) rotate(0deg)";
+
+          // PLAY VIDEO OTOMATIS
+          const video = document.getElementById("mainVideo");
+
+          // Coba play dengan suara
+          const playPromise = video.play();
+
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                // Update tombol play ke "Pause"
+                document.getElementById("playIcon").textContent = "⏸";
+                document.getElementById("playText").textContent = "Pause";
+              })
+              .catch((error) => {
+                console.log("Autoplay mungkin diblokir");
+              });
+          }
+        }, 150);
+      }
+
+      function closeVideo() {
+        const overlay = document.getElementById("overlay");
+        overlay.style.display = "none";
+        const video = document.getElementById("mainVideo");
+        video.pause();
+        video.currentTime = 0;
+
+        // Reset tombol ke "Play"
+        document.getElementById("playIcon").textContent = "▶";
+        document.getElementById("playText").textContent = "Play";
+      }
+
+      // FUNGSI CUSTOM BUTTON DI VIDEO
+      function togglePlay() {
+        const video = document.getElementById("mainVideo");
+        const playIcon = document.getElementById("playIcon");
+        const playText = document.getElementById("playText");
+
+        if (video.paused) {
+          video.play();
+          playIcon.textContent = "⏸";
+          playText.textContent = "Pause";
+        } else {
+          video.pause();
+          playIcon.textContent = "▶";
+          playText.textContent = "Play";
+        }
+      }
+
+      function toggleMute() {
+        const video = document.getElementById("mainVideo");
+        const volumeIcon = document.getElementById("volumeIcon");
+
+        video.muted = !video.muted;
+        volumeIcon.textContent = video.muted ? "🔇" : "🔊";
+      }
+
+      function restartVideo() {
+        const video = document.getElementById("mainVideo");
+        video.currentTime = 0;
+        video.play();
+
+        // Update tombol ke "Pause"
+        document.getElementById("playIcon").textContent = "⏸";
+        document.getElementById("playText").textContent = "Pause";
+      }
+
+      // Event listener untuk update tombol otomatis
+      document
+        .getElementById("mainVideo")
+        .addEventListener("play", function () {
+          document.getElementById("playIcon").textContent = "⏸";
+          document.getElementById("playText").textContent = "Pause";
+        });
+
+      document
+        .getElementById("mainVideo")
+        .addEventListener("pause", function () {
+          document.getElementById("playIcon").textContent = "▶";
+          document.getElementById("playText").textContent = "Play";
+        });
+
+      document
+        .getElementById("overlay")
+        .addEventListener("click", function (e) {
+          if (e.target === this) {
+            closeVideo();
+          }
+        });
+    </script>
+  </body>
+</html>
